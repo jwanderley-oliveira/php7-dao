@@ -70,8 +70,55 @@ public function getDtcadastro(){
 		}
 	}
 
-	public function __toString()
-{
+	public static function getList(){
+
+		$sql = new sql();
+
+		return $sql->select("SELECT * FROM tb_usuarios ORDER BY des_login;");
+
+	}
+
+	public static function search($login){
+
+		$sql = new sql();
+
+		return $sql->select("SELECT * FROM tb_usuarios WHERE des_login LIKE :SEARCH ORDER BY des_login", array(
+
+			':SEARCH'=>"%".$login."%"
+
+		));
+	}
+
+	public function login($login, $password){
+
+		$sql = new sql();
+
+		$results = $sql->select("SELECT * FROM tb_usuarios WHERE des_login = :LOGIN AND des_senha = :PASSWORD", array(
+
+			":LOGIN"=>$login,
+			":PASSWORD"=>$password
+
+		));
+
+		if (count($results) > 0) {
+
+			$row = $results[0];
+
+			$this->setIdusuario($row['id_usuario']);
+			$this->setDeslogin($row['des_login']);
+			$this->setDessenha($row['des_senha']);
+			$this->setDtcadastro(new DateTime($row['dt_cadastro']));
+		} 
+
+		else {
+
+			throw new Exception("Login e/ou senha inválidos.");
+		}
+
+	}
+
+	public function __toString(){
+
 
 	return json_encode(array(
 
